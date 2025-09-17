@@ -159,7 +159,7 @@ gameSchema.methods.addTurnResult = function (roundNumber, turnData) {
     // Create new round if it doesn't exist
     round = {
       roundNumber: roundNumber,
-      currentRoundType: turnData.roundType,
+      currentRoundType: turnData.roundType || "guess", // Fallback to 'guess' if undefined
       currentTurn: 1,
       turns: [],
       completed: false,
