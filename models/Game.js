@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const playerSchema = new mongoose.Schema({
   id: { type: String, required: true },
+  index: { type: Number, required: true },
   name: { type: String, required: true },
   score: { type: Number, default: 0 },
   isWinner: { type: Boolean, default: false },
@@ -107,13 +108,17 @@ gameSchema.methods.calculateFinalScores = function () {
     playerScores.set(player.id, 0);
   });
 
-  // Sum scores from all rounds
+  // Sum scores from all rounds and turns
   if (this.rounds) {
     this.rounds.forEach((round, roundKey) => {
-      if (round.scores) {
-        round.scores.forEach((score, playerId) => {
-          const currentScore = playerScores.get(playerId) || 0;
-          playerScores.set(playerId, currentScore + score);
+      if (round.turns && Array.isArray(round.turns)) {
+        round.turns.forEach((turn) => {
+          if (turn.scores) {
+            turn.scores.forEach((score, playerId) => {
+              const currentScore = playerScores.get(playerId) || 0;
+              playerScores.set(playerId, currentScore + score);
+            });
+          }
         });
       }
     });

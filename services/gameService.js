@@ -270,17 +270,11 @@ class GameService {
     if (!round) {
       round = {
         roundNumber,
-        roundType: roundType, // Use the passed round type
-        products: [],
-        submissions: new Map(),
-        scores: new Map(),
+        currentRoundType: roundType, // Use correct schema field name
+        currentTurn: 1, // Required field
+        turns: [], // Array of turn objects (not Map)
         completed: false,
       };
-
-      // For Final Round, add turns structure
-      if (roundType === "final") {
-        round.turns = new Map();
-      }
 
       game.rounds.set(roundKey, round);
     } else {
@@ -288,19 +282,20 @@ class GameService {
       if (roundNumber === 3 && roundType === "final") {
         console.log("Migrating Round 3 to Final Round structure");
 
-        // Fix roundType
-        if (round.roundType !== "final") {
+        // Fix currentRoundType
+        if (round.currentRoundType !== "final") {
           console.log(
-            "Fixing Round 3 roundType from",
-            round.roundType,
+            "Fixing Round 3 currentRoundType from",
+            round.currentRoundType,
             "to final"
           );
-          round.roundType = "final";
+          round.currentRoundType = "final";
         }
 
         // Add turns structure if missing
         if (!round.turns) {
-          round.turns = new Map();
+          round.turns = [];
+          round.currentTurn = 1;
           console.log("Added turns structure to Round 3");
         }
 
@@ -330,19 +325,21 @@ class GameService {
 
       // Initialize turn if it doesn't exist
       if (!round.turns) {
-        round.turns = new Map();
+        round.turns = [];
       }
-      if (!round.turns.has(turnKey)) {
-        round.turns.set(turnKey, {
+      let turn = round.turns.find((t) => t.turnNumber === turnNumber);
+      if (!turn) {
+        turn = {
           turnNumber,
           submissions: new Map(),
-          products: [],
+          product: null,
+          scores: new Map(),
           completed: false,
-        });
+        };
+        round.turns.push(turn);
       }
 
       // Store submission for this specific turn
-      const turn = round.turns.get(turnKey);
       turn.submissions.set(playerId, submission);
 
       // Also store in round level submissions for finalization
@@ -561,12 +558,10 @@ class GameService {
     // Create a clean Final Round
     const finalRound = {
       roundNumber: 3,
-      roundType: "final",
-      products: [],
-      submissions: new Map(),
-      scores: new Map(),
+      currentRoundType: "final",
+      currentTurn: 1,
+      turns: [],
       completed: false,
-      turns: new Map(),
     };
 
     // Replace Round 3
@@ -601,7 +596,7 @@ class GameService {
       // Create new round if it doesn't exist
       round = {
         roundNumber: roundNumber,
-        roundType: roundType,
+        currentRoundType: roundType,
         currentTurn: 1,
         turns: [],
         completed: false,

@@ -11,7 +11,10 @@ async function checkGame() {
 
     if (game) {
       console.log("Game found!");
-      console.log("Round 3 roundType:", game.rounds.get("3")?.roundType);
+      console.log(
+        "Round 3 currentRoundType:",
+        game.rounds.get("3")?.currentRoundType
+      );
       console.log("Round 3 has turns:", !!game.rounds.get("3")?.turns);
       console.log(
         "Game state currentRoundType:",

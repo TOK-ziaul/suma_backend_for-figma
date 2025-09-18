@@ -22,12 +22,10 @@ async function resetFinalRound() {
     // Create a clean Final Round
     const finalRound = {
       roundNumber: 3,
-      roundType: "final",
-      products: [],
-      submissions: new Map(),
-      scores: new Map(),
+      currentRoundType: "final",
+      currentTurn: 1,
+      turns: [],
       completed: false,
-      turns: new Map(),
     };
 
     // Replace Round 3
